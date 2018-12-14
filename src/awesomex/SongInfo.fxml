@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="322.0" prefWidth="392.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="awesomex.SongInfoController">
+   <children>
+      <Label layoutX="14.0" layoutY="74.0" prefHeight="34.0" prefWidth="84.0" style="-fx-background-color: #f48fb1;" text=" Album:">
+         <font>
+            <Font size="20.0" />
+         </font></Label>
+      <Label fx:id="album" layoutX="104.0" layoutY="74.0" prefHeight="34.0" prefWidth="283.0">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Label fx:id="title" layoutX="104.0" layoutY="116.0" prefHeight="34.0" prefWidth="283.0">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Label layoutX="14.0" layoutY="116.0" prefHeight="34.0" prefWidth="84.0" style="-fx-background-color: #f48fb1;" text=" Title:">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="artist" layoutX="104.0" layoutY="161.0" prefHeight="34.0" prefWidth="283.0">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Label layoutX="14.0" layoutY="161.0" prefHeight="34.0" prefWidth="84.0" style="-fx-background-color: #f48fb1;" text=" Artist:">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

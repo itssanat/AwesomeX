@@ -1,0 +1,12 @@
+/* 
+    Created on : 18 Sep, 2018, 9:20:05 PM
+    Author     : itssanat
+*/
+
+.button{
+    -fx-background-color: transparent;  /* making button background transparent */ 
+}
+
+.button:hover {
+    -fx-background-color: #00cccc;
+}
