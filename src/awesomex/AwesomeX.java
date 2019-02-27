@@ -23,7 +23,7 @@ public class AwesomeX extends Application {
         stage.setOnCloseRequest(e -> {  // to close the song(if playing) before closing window //
             controller.close();     // calling close() method of controller class //
         });
-        stage.setResizable(false);  // making window unresizable // 
+        //stage.setResizable(false);  // making window unresizable // 
         stage.setTitle("AwesomeX Music Player"); // setting the title of stage //
         
         stage.setScene(scene);

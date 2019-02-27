@@ -1,6 +1,7 @@
 package awesomex;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.net.URL;
 import java.sql.*;
 import java.util.Random;
@@ -34,9 +35,8 @@ import javafx.util.Duration;
  *
  * @author itssanat
  */
-public class FXMLDocumentController implements Initializable ,Runnable {
+public class FXMLDocumentController implements Initializable {  // implement runnable
 
-    @FXML
     protected Button play;
     @FXML
     private Button browse;
@@ -91,6 +91,8 @@ public class FXMLDocumentController implements Initializable ,Runnable {
     private boolean isFav = false;  // variable to check whether favorite playlist is open or not //
     @FXML
     private ImageView playIcon;
+    Image playImage , pauseImage , defaultImage;
+   
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {   
@@ -100,9 +102,18 @@ public class FXMLDocumentController implements Initializable ,Runnable {
         slider.setValue(0);
         connect = connectDB();
         addFavorite.setText("");
+        
+        playImage = new Image("file:src/awesomex/icons/play.png");
+        pauseImage = new Image("file:src/awesomex/icons/pause.png");
+        defaultImage = new Image("file:src/awesomex/icons/AesomeXicon.jpg");
+        ImageView iv = new ImageView(playImage);
+        iv.setFitHeight(34);
+        iv.setFitWidth(34);
+        pause.setGraphic(iv);
+        coverPhoto.setImage(defaultImage);
     }    
 
-    @FXML
+    
     public void playButtonAction() {
         close();
         try {
@@ -111,13 +122,18 @@ public class FXMLDocumentController implements Initializable ,Runnable {
             currentSongIndex = songList.getSelectionModel().getSelectedIndex(); // updating the index of current song //
             
             if(isFavorite(currentSong.getName()))  // checking the playlist //
-                addFavorite.setText(".");
+                addFavorite.setText("");      
             else
-                addFavorite.setText("");
+                addFavorite.setText("/");
             
-            t = new Thread(this);
+            //t = new Thread(this);
             isPlaying = true;
-            t.start();  //invoking the thread //
+            //t.start();  //invoking the thread //
+            run();
+            ImageView iv = new ImageView(pauseImage);
+            iv.setFitHeight(34);
+            iv.setFitWidth(34);
+            pause.setGraphic(iv);
         } catch (Exception e) {
             nowPlaying.setText("error in playing");
         }
@@ -130,6 +146,7 @@ public class FXMLDocumentController implements Initializable ,Runnable {
             chooser.setDialogTitle("Choose file to play..."); // setting title of title bar //
             chooser.showOpenDialog(null);
             songFile = chooser.getSelectedFile();
+            playButtonAction();
         }
         catch(Exception e){ 
             nowPlaying.setText("No file choosen");
@@ -153,9 +170,10 @@ public class FXMLDocumentController implements Initializable ,Runnable {
             String s = songList.getSelectionModel().getSelectedItem();  // selection song from music playlist //
             if(s!=null && !s.isEmpty()){
                 int selectedSong = songList.getSelectionModel().getSelectedIndex();
-                songFile = songs[selectedSong];  
+                songFile = songs[selectedSong];
             }
         }
+        playButtonAction();
     }
     
     public void close(){
@@ -166,20 +184,20 @@ public class FXMLDocumentController implements Initializable ,Runnable {
         }
     }
     
-    @Override
+    //@Override
     public void run(){  // start of the thread //
         try {
-            
-            path = songFile.getAbsolutePath();
-            path = path.replace("//", "/");
-            media = new Media(new File(path).toURI().toString());  // initialisation of Media class //
+            media = new Media(songFile.toURI().toString());
             mediaPlayer = new MediaPlayer(media);                 // initialisation of MediaPlayer class //
             mediaPlayer.setVolume(volumeSlider.getValue()/100);  // adding vloume slider //
+            
             // adding a listener to volume slider ///
             volumeSlider.valueProperty().addListener(new ChangeListener<Number>(){
                 @Override
                 public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                    
                     mediaPlayer.setVolume(newValue.doubleValue()/100);
+                    
                 }
             });
             mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
@@ -190,7 +208,11 @@ public class FXMLDocumentController implements Initializable ,Runnable {
                     image = (Image)(media.getMetadata().get("image")); 
                     coverPhoto.setImage(image);
                 }
+                
             });
+            
+            //Thread.sleep(1000);
+            
             slider.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
@@ -208,18 +230,27 @@ public class FXMLDocumentController implements Initializable ,Runnable {
             nowPlaying.setText("error in playing");
         }
     }
-
+    
     @FXML
     private void pauseButtonAction(ActionEvent event) {  // to pause and resume the song // 
         if(isPaused){
             mediaPlayer.play();
             isPaused = false;
             nowPlaying.setText(currentSong.getName());
+            //playIcon.setImage(new Image("icons//play.png"));
+            ImageView iv = new ImageView(pauseImage);
+            iv.setFitHeight(34);
+            iv.setFitWidth(34);
+            pause.setGraphic(iv);
         }
         else{
             mediaPlayer.pause();
             isPaused = true;
             nowPlaying.setText("Paused...");
+            ImageView iv = new ImageView(playImage);
+            iv.setFitHeight(34);
+            iv.setFitWidth(34);
+            pause.setGraphic(iv);
         }
     }
 
@@ -285,6 +316,7 @@ public class FXMLDocumentController implements Initializable ,Runnable {
             infoWindow.setTitle("Song details"); // setting the title of stage //
             infoWindow.setScene(new Scene(root1));
             infoWindow.show();
+            
         }
         catch(Exception e){
             System.out.println("errpr");
@@ -325,9 +357,23 @@ public class FXMLDocumentController implements Initializable ,Runnable {
     protected void loadSongs(){  
         listItems.clear();
         try{
-            songs = dir.listFiles();
+            FileFilter filter = new FileFilter() {
+                @Override
+                public boolean accept(File f) {
+                    if(f.isDirectory())
+                        return false;
+                    if(f.getName().endsWith(".mp3"))
+                        return true;
+                    else
+                        return false;
+                }
+            };
+            
+            songs = dir.listFiles(filter);
+            
             for(File file : songs){
-                if(file.toString().endsWith(".mp3"))
+                
+                if(file.getName().endsWith(".mp3")) //  file.toString().endsWith(".mp3")
                     listItems.add(file.getName()); // adding song in observable list //
             }
             songList.getItems().addAll(listItems); // to add in observable listView //
@@ -360,7 +406,7 @@ public class FXMLDocumentController implements Initializable ,Runnable {
         try{
             Class.forName("org.sqlite.JDBC");
             Connection conn = DriverManager.getConnection("jdbc:sqlite:awesomexDB.db");
-            System.out.println("connection estd...");
+            //System.out.println("connection estd...");
             return conn;
         } catch(Exception e){
             System.out.println("unable to connect");
@@ -376,7 +422,7 @@ public class FXMLDocumentController implements Initializable ,Runnable {
                 PreparedStatement pstmt = connect.prepareStatement(sql);
                 pstmt.setString(1, currentSong.getName());
                 pstmt.executeUpdate();
-                addFavorite.setText("");
+                addFavorite.setText("/");
             } catch (SQLException ex) {
                 System.out.println("error in deleting");
             }
@@ -387,7 +433,7 @@ public class FXMLDocumentController implements Initializable ,Runnable {
                 pstmt.setString(1, currentSong.getName());
                 pstmt.setString(2,currentSong.getAbsolutePath());
                 pstmt.executeUpdate();
-                addFavorite.setText(".");
+                addFavorite.setText("");
             } catch (SQLException ex) {
                 System.out.println("error");
             }
