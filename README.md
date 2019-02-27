@@ -25,7 +25,7 @@ Clone this Repository. Go to Netbeans. Open an existing project in netBeans. Add
 - Fork and contribute
 
 ---
-# Developers
+# Developer
 <a href="https://github.com/itssanat">Sanat Kumar</a> <br>
 mail: <sanat@mnnit.ac.in>
 
